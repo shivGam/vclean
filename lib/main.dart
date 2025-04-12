@@ -1,14 +1,31 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry_app/constants/colors.dart';
 import 'package:laundry_app/routes.dart';
 import 'package:laundry_app/screens/account.dart';
 import 'package:laundry_app/screens/home.dart';
 import 'package:laundry_app/screens/order_history.dart';
 
+import 'bloc/auth_bloc.dart';
 import 'components/bottom_nav.dart';
+import 'data/repository/auth_repo.dart';
+import 'getit.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await init();
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(sl<AuthRepository>()),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.from(
-          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF5963))),
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary)),
       debugShowCheckedModeBanner: false,
       home: InitialScreenDecider(),
       onGenerateRoute: AppRoutes.generateRoute,
