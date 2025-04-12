@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../constants/colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,31 +39,25 @@ class _LoginScreenState extends State<LoginScreen> {
               width: MediaQuery.of(context).size.width,
             ),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 16,),
                   Text(
-                    'Sign In to Wholesumm',
+                    'Welcome to V Clean Laundry & Services',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: AppColors.title
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Sign in with your Google account to continue',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
                   _TermsCheckbox(
                     value: _isChecked,
                     onChanged: (value) => setState(() => _isChecked = value ?? false),
                     theme: theme,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -123,12 +118,12 @@ class _TermsCheckbox extends StatelessWidget {
                 const TextSpan(text: 'I agree to the '),
                 TextSpan(
                   text: 'Terms of Service',
-                  style: TextStyle(color: theme.colorScheme.primary),
+                  style: TextStyle(color: AppColors.secondary),
                 ),
                 const TextSpan(text: ' and '),
                 TextSpan(
                   text: 'Privacy Policy',
-                  style: TextStyle(color: theme.colorScheme.primary),
+                  style: TextStyle(color: AppColors.secondary),
                 ),
               ],
             ),
