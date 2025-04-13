@@ -1,27 +1,31 @@
-class User {
+class UserData {
   String userId;
   String name;
   String phone;
   String address;
+  String photoUrl;
 
-  User({
+  UserData({
     required this.userId,
     required this.name,
     required this.phone,
     required this.address,
+    required this.photoUrl,
   });
 
-  User copyWith({
+  UserData copyWith({
     String? userId,
     String? name,
     String? phone,
     String? address,
+    String? photoUrl,
   }) {
-    return User(
+    return UserData(
       userId: userId ?? this.userId,
       name: name ?? this.name,
       phone: phone ?? this.phone,
       address: address ?? this.address,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 
@@ -31,15 +35,17 @@ class User {
       'name': name,
       'phone': phone,
       'address': address,
+      'photoUrl': photoUrl,
     };
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserData.fromJson(Map<String, dynamic> json) {
+    return UserData(
       userId: json['userId'] as String,
       name: json['name'] as String,
       phone: json['phone'] as String,
       address: json['address'] as String,
+      photoUrl: json['photoUrl'] as String,
     );
   }
 }
