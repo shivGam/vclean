@@ -53,7 +53,7 @@ class BottomNavigation extends StatelessWidget {
                 _buildNavItem(
                   context,
                   0,
-                  Icons.iron_outlined,
+                  Icons.dry_cleaning,
                   'Home',
                   Colors.grey,
                   state.currentIndex == 0,
