@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry_app/routes.dart';
+import 'package:laundry_app/user_pref.dart';
 import '../../bloc/auth_bloc.dart';
 import '../../constants/colors.dart';
+import '../../getit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,9 +48,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               );
             }
-
             if (state is AuthenticatedState) {
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
+              final prefManager = sl<UserPreferencesManager>();
+              prefManager.updateProfileStatus().then((_) {
+                if (prefManager.isReadyForMain) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.home,
+                        (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.userdetails,
+                        (route) => false,
+                  );
+                }
+              });
             }
           },
         ),

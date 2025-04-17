@@ -1,15 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry_app/bloc/service_bloc.dart';
 import 'package:laundry_app/constants/colors.dart';
+import 'package:laundry_app/data/repository/service_repo.dart';
 import 'package:laundry_app/routes.dart';
 import 'package:laundry_app/screens/account.dart';
 import 'package:laundry_app/screens/home.dart';
 import 'package:laundry_app/screens/order_history.dart';
+import 'package:laundry_app/user_pref.dart';
 
 import 'bloc/auth_bloc.dart';
+import 'bloc/user_bloc.dart';
 import 'components/bottom_nav.dart';
 import 'data/repository/auth_repo.dart';
+import 'data/repository/user_repo.dart';
 import 'getit.dart';
 
 Future<void> main() async {
@@ -22,6 +27,12 @@ Future<void> main() async {
         BlocProvider(
           create: (context) => AuthBloc(sl<AuthRepository>()),
         ),
+        BlocProvider(
+          create: (context) => UserInfoBloc(sl<UserRepository>(), sl<UserPreferencesManager>()),
+        ),
+        BlocProvider(
+            create: (context) => LaundryServiceBloc(sl<LaundryServiceRepository>())
+        )
       ],
       child: const MyApp(),
     ),
@@ -47,8 +58,13 @@ class InitialScreenDecider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pref = sl<UserPreferencesManager>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(!pref.isReadyForMain){
         Navigator.pushReplacementNamed(context, AppRoutes.login);
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+      }
     });
     return const Scaffold(
       body: Center(
