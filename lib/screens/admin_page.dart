@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../bloc/order_bloc.dart';
 import '../data/model/order_data.dart';
+import '../getit.dart';
+import '../routes.dart';
+import '../user_pref.dart';
 
 class OrderHistoryAdminPage extends StatefulWidget {
   const OrderHistoryAdminPage({super.key});
@@ -120,17 +124,11 @@ class _OrderHistoryAdminPageState extends State<OrderHistoryAdminPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // Navigate to login page and clear navigation stack
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login', // Replace with your login route
-                        (route) => false,
-                  );
-                },
+                onPressed: () => _handleLogout(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[700],
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -139,7 +137,7 @@ class _OrderHistoryAdminPageState extends State<OrderHistoryAdminPage> {
                   ),
                 ),
                 child: const Text(
-                  'Logout',
+                  'Log out',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -152,6 +150,45 @@ class _OrderHistoryAdminPageState extends State<OrderHistoryAdminPage> {
         ],
       ),
     );
+  }
+  void _handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _performLogout(context);
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _performLogout(BuildContext context) async {
+    try {
+      await sl<FirebaseAuth>().signOut();
+      await sl<UserPreferencesManager>().signOut();
+
+      // Navigate to login screen
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.login,
+            (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error logging out: $e')),
+      );
+    }
   }
 }
 
@@ -180,7 +217,7 @@ class AdminOrderCard extends StatelessWidget {
         case PriorityList.urgent:
           return Colors.red.withOpacity(0.5);
         case PriorityList.late:
-          return Colors.yellow.withOpacity(0.5);
+          return Colors.blue.withOpacity(0.5);
         case PriorityList.usual:
           return Colors.grey.withOpacity(0.1);
       }
