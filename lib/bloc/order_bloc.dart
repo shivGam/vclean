@@ -19,6 +19,11 @@ class SaveOrder extends OrderEvent {
   SaveOrder(this.order);
 }
 
+class UpdateOrder extends OrderEvent {
+  final Order order;
+  UpdateOrder(this.order);
+}
+
 class StartOrdersStream extends OrderEvent {}
 
 class StartUserOrdersStream extends OrderEvent {
@@ -65,6 +70,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<StartOrdersStream>(_onStartOrdersStream);
     on<StartUserOrdersStream>(_onStartUserOrdersStream);
     on<OrdersUpdated>(_onOrdersUpdated);
+    on<UpdateOrder>(_onUpdateOrder);
   }
 
   Future<void> _onLoadAllOrders(
@@ -95,6 +101,23 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       result.fold(
             (failure) => emit(OrderError(failure.message)),
             (orders) => emit(OrdersLoaded(orders)),
+      );
+    } catch (e) {
+      emit(OrderError(e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateOrder(
+      UpdateOrder event,
+      Emitter<OrderState> emit,
+      ) async {
+    //emit(OrderLoading());
+    try {
+      final result = await _repository.updateOrder(event.order);
+
+      result.fold(
+            (failure) => emit(OrderError(failure.message)),
+            (_) => emit(OrderOperationSuccess('Order Completed')),
       );
     } catch (e) {
       emit(OrderError(e.toString()));

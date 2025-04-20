@@ -7,6 +7,7 @@ abstract class IOrderRepository {
   Future<Either<Failure, List<model.Order>>> getAllOrders(); // Use alias
   Future<Either<Failure, List<model.Order>>> getUserOrders(String userId);
   Future<Either<Failure, String>> saveOrder(model.Order order);
+  Future<Either<Failure, bool>> updateOrder(model.Order order);
   Stream<List<model.Order>> ordersStream();
   Stream<List<model.Order>> userOrdersStream(String userId);
 }
@@ -36,6 +37,27 @@ class OrderRepository implements IOrderRepository {
       return Right(orders);
     } catch (e) {
       return Left(DatabaseFailure('Failed to fetch orders: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateOrder(model.Order order) async {
+    try {
+      // Ensure we have an order ID
+      if (order.orderId.isEmpty) {
+        return Left(DatabaseFailure('Cannot update order: Missing order ID'));
+      }
+
+      // Update the existing order by ID
+      await _database
+          .ref()
+          .child(_dbPath)
+          .child(order.orderId)
+          .update(order.toJson());
+
+      return const Right(true);
+    } catch (e) {
+      return Left(DatabaseFailure('Failed to update order: ${e.toString()}'));
     }
   }
 
