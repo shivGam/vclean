@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../bloc/order_bloc.dart';
+import '../constants/colors.dart';
 import '../data/model/order_data.dart';
 import '../getit.dart';
 import '../routes.dart';
@@ -52,8 +53,11 @@ class _OrderHistoryAdminPageState extends State<OrderHistoryAdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order History'),
-        centerTitle: true,
+        title: Text('Order History',style: TextStyle(
+          color: AppColors.primary,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),),
       ),
       body: Column(
         children: [

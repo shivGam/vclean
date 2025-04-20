@@ -11,6 +11,7 @@ import 'package:laundry_app/user_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/order_bloc.dart';
+import 'data/repository/admin_repo.dart';
 import 'data/repository/auth_repo.dart';
 import 'data/repository/order_repo.dart';
 
@@ -32,11 +33,18 @@ Future<void> init() async {
   sl.registerLazySingleton<IOrderRepository>(
           () => OrderRepository(sl<FirebaseDatabase>())
   );
+  sl.registerLazySingleton<AdminRepository>(
+        () => AdminRepositoryImpl(sl<FirebaseFirestore>()),
+  );
   sl.registerFactory(() => OrderBloc(sl<IOrderRepository>()));
-  sl.registerLazySingleton<UserPreferencesManager>(() => UserPreferencesManager(prefs, auth,sl<UserRepository>()));
+  sl.registerLazySingleton<UserPreferencesManager>(() => UserPreferencesManager(prefs, auth,sl<UserRepository>(),sl<AdminRepository>()));
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerFactory(() => LaundryServiceBloc(sl<LaundryServiceRepository>()));
-  sl.registerFactory(() => AuthBloc(sl<AuthRepository>()));
+  sl.registerFactory(() => AuthBloc(
+      sl<AuthRepository>(),
+      sl<AdminRepository>(),
+      sl<UserPreferencesManager>()
+  ));
   sl.registerFactory(() => UserInfoBloc(sl<UserRepository>(),sl<UserPreferencesManager>()));
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseDatabase.instance);

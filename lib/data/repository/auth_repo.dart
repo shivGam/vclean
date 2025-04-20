@@ -3,13 +3,13 @@ import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../failure.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, String>> signInWithGoogle();
   Future<Either<Failure, void>> signOut();
   String? get currentUserId;
+  String? get currentUserEmail;
   bool get isLoggedIn;
 }
 
@@ -22,7 +22,6 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, String>> signInWithGoogle() async {
     try {
-
       await _googleSignIn.signOut();
       // Start the Google Sign-In process
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -44,7 +43,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final user = result.user!;
 
-      return Right(result.user!.uid);
+      return Right(user.uid);
     } on FirebaseAuthException catch (e) {
       return Left(AuthFailure(e.message ?? 'Authentication failed'));
     } catch (e, st) {
@@ -71,5 +70,12 @@ class AuthRepositoryImpl implements AuthRepository {
   String? get currentUserId => _auth.currentUser?.uid;
 
   @override
+  String? get currentUserEmail => _auth.currentUser?.email;
+
+  @override
   bool get isLoggedIn => _auth.currentUser != null;
+}
+
+class AuthFailure extends Failure {
+  AuthFailure(String message) : super(message);
 }
