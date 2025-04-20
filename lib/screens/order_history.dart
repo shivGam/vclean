@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:laundry_app/user_pref.dart';
 import '../bloc/order_bloc.dart';
+import '../constants/colors.dart';
 import '../data/model/order_data.dart';
 import '../getit.dart';
 
@@ -20,7 +22,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   @override
   void initState() {
     super.initState();
-    final userId = sl<UserPreferencesManager>().currentUser!.userId;
+    final userId = sl<FirebaseAuth>().currentUser!.uid;
     context.read<OrderBloc>().add(StartUserOrdersStream(userId));
   }
 
@@ -28,8 +30,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order History'),
-        centerTitle: true,
+        title: Text('Order History',style: TextStyle(
+          color: AppColors.primary,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),),
       ),
       body: BlocConsumer<OrderBloc, OrderState>(
         listener: (context, state) {
@@ -200,4 +205,5 @@ class OrderHistoryCard extends StatelessWidget {
       ),
     );
   }
+
 }

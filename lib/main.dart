@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry_app/bloc/order_bloc.dart';
 import 'package:laundry_app/bloc/service_bloc.dart';
 import 'package:laundry_app/constants/colors.dart';
+import 'package:laundry_app/data/repository/admin_repo.dart';
 import 'package:laundry_app/data/repository/order_repo.dart';
 import 'package:laundry_app/data/repository/service_repo.dart';
 import 'package:laundry_app/routes.dart';
 import 'package:laundry_app/screens/account.dart';
+import 'package:laundry_app/screens/admin_page.dart';
 import 'package:laundry_app/screens/home.dart';
 import 'package:laundry_app/screens/order_history.dart';
 import 'package:laundry_app/user_pref.dart';
@@ -27,7 +29,7 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthBloc(sl<AuthRepository>()),
+          create: (context) => AuthBloc(sl<AuthRepository>(),sl<AdminRepository>(),sl<UserPreferencesManager>()),
         ),
         BlocProvider(
           create: (context) => UserInfoBloc(sl<UserRepository>(), sl<UserPreferencesManager>()),
@@ -65,7 +67,9 @@ class InitialScreenDecider extends StatelessWidget {
   Widget build(BuildContext context) {
     final pref = sl<UserPreferencesManager>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(!pref.isReadyForMain){
+      if (pref.isAdmin) {
+        Navigator.pushReplacementNamed(context, AppRoutes.admin);
+      } else if (!pref.isReadyForMain){
         Navigator.pushReplacementNamed(context, AppRoutes.login);
       } else {
         Navigator.pushReplacementNamed(context, AppRoutes.home);

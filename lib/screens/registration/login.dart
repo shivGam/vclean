@@ -50,19 +50,27 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             if (state is AuthenticatedState) {
               final prefManager = sl<UserPreferencesManager>();
-              prefManager.updateProfileStatus().then((_) {
-                if (prefManager.isReadyForMain) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    AppRoutes.home,
-                        (route) => false,
-                  );
-                } else {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    AppRoutes.userdetails,
-                        (route) => false,
-                  );
-                }
-              });
+              if (prefManager.isReadyForAdminDashboard) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.admin,
+                      (route) => false,
+                );
+              }
+              else {
+                prefManager.updateProfileStatus().then((_) {
+                  if (prefManager.isReadyForMain) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      AppRoutes.home,
+                          (route) => false,
+                    );
+                  } else {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      AppRoutes.userdetails,
+                          (route) => false,
+                    );
+                  }
+                });
+              }
             }
           },
         ),
