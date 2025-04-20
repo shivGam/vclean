@@ -28,10 +28,8 @@ class _OfferCarouselState extends State<OfferCarousel> {
               });
             },
             children: [
-              _buildOfferCard("Special Summer Offer", "40% OFF"),
-              _buildOfferCard("Winter Special", "30% OFF"),
-              _buildOfferCard("Weekend Deal", "20% OFF"),
-              _buildOfferCard("New User Offer", "50% OFF"),
+              _buildOfferCard("New Comer", "25% OFF","https://images.unsplash.com/photo-1561053720-76cd73ff22c3"),
+              _buildOfferCard("Weekend Deal", "10% OFF","https://images.unsplash.com/photo-1561053720-76cd73ff22c3"),
             ],
           ),
         ),
@@ -39,7 +37,7 @@ class _OfferCarouselState extends State<OfferCarousel> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
-            4,
+            2,
                 (index) => Container(
               width: 8,
               height: 8,
@@ -47,7 +45,7 @@ class _OfferCarouselState extends State<OfferCarousel> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _currentPage == index
-                    ? const Color(0xFF4355B9)
+                    ? Colors.yellow
                     : Colors.grey.shade300,
               ),
             ),
@@ -57,29 +55,29 @@ class _OfferCarouselState extends State<OfferCarousel> {
     );
   }
 
-  Widget _buildOfferCard(String title, String discount) {
+  Widget _buildOfferCard(String title, String discount, String imageUrl) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: Colors.grey.shade300,
         borderRadius: BorderRadius.circular(12),
-        image: const DecorationImage(
-          image: NetworkImage("https://via.placeholder.com/400x200"),
+        image: DecorationImage(
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
       child: Stack(
         children: [
           Positioned(
-            top: 20,
-            left: 20,
+            bottom: 20,
+            right: 20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.yellow,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -88,7 +86,7 @@ class _OfferCarouselState extends State<OfferCarousel> {
                 Text(
                   discount,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.yellow,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
