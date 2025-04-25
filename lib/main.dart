@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,9 +18,11 @@ import 'package:laundry_app/screens/order_history.dart';
 import 'package:laundry_app/user_pref.dart';
 
 import 'bloc/auth_bloc.dart';
+import 'bloc/review_bloc.dart';
 import 'bloc/user_bloc.dart';
 import 'components/bottom_nav.dart';
 import 'data/repository/auth_repo.dart';
+import 'data/repository/review_repo.dart';
 import 'data/repository/user_repo.dart';
 import 'getit.dart';
 
@@ -44,6 +47,11 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (context) => CarouselBloc(sl<CarouselRepository>()),
+        ),
+        BlocProvider(
+          create: (context) => ReviewBloc(
+            ReviewRepository(FirebaseFirestore.instance),
+          ),
         ),
       ],
       child: const MyApp(),

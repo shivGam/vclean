@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry_app/constants/colors.dart';
 import 'package:laundry_app/data/model/user_data.dart';
 import 'package:laundry_app/routes.dart';
+import 'package:laundry_app/screens/review_add_screen.dart';
+import 'package:laundry_app/screens/temporary_screen.dart';
 import 'package:laundry_app/user_pref.dart';
 
 import '../bloc/user_bloc.dart';
@@ -95,9 +97,26 @@ class _AccountPageState extends State<AccountPage> {
             const SizedBox(height: 16),
 
             _buildInfoCard('Address', userData.address),
+            
+            const SizedBox(height: 16,),
 
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push( context, MaterialPageRoute(builder: (_) => ReviewScreen(userData: userData)));
+                },
+                child: const Text('Review Us!')
+            ),
+
+            const SizedBox(height: 16,),
+            
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push( context, MaterialPageRoute(builder: (_) => AddCarouselScreen()),);
+                },
+                child: const Text('Add services')
+            ),
+            
             const Spacer(),
-
             // Logout button
             SizedBox(
               width: double.infinity,
