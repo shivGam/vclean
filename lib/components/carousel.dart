@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/carousel_bloc.dart';
 
 class OfferCarousel extends StatefulWidget {
   const OfferCarousel({Key? key}) : super(key: key);
@@ -12,50 +14,94 @@ class _OfferCarouselState extends State<OfferCarousel> {
   final PageController _pageController = PageController();
 
   @override
+  void initState() {
+    super.initState();
+    context.read<CarouselBloc>().add(LoadCarousels());
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
+    return BlocBuilder<CarouselBloc, CarouselState>(
+      builder: (context, state) {
+        if (state is CarouselLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is CarouselError) {
+          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is CarouselsLoaded) {
+          final carousels = state.carousels;
+
+          if (carousels.isEmpty) {
+            return const Center(child: Text('No offers available'));
+          }
+
+          return Column(
+            children: [
+              Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: carousels.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final carousel = carousels[index];
+                    return _buildOfferCard(
+                      carousel.title,
+                      carousel.discount,
+                      carousel.image,
+                      Color(int.parse('0xFF${carousel.textColor}')),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  carousels.length,
+                      (index) => Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentPage == index
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+
+        // Default empty state
+        return Container(
           height: 160,
           decoration: BoxDecoration(
+            color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            children: [
-              _buildOfferCard("New Comer", "25% OFF","https://images.unsplash.com/photo-1561053720-76cd73ff22c3"),
-              _buildOfferCard("Weekend Deal", "10% OFF","https://images.unsplash.com/photo-1561053720-76cd73ff22c3"),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            2,
-                (index) => Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentPage == index
-                    ? Colors.yellow
-                    : Colors.grey.shade300,
-              ),
-            ),
-          ),
-        ),
-      ],
+          child: const Center(child: Text('Loading offers...')),
+        );
+      },
     );
   }
 
-  Widget _buildOfferCard(String title, String discount, String imageUrl) {
+  Widget _buildOfferCard(String title, String discount, String imageUrl, Color textColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
@@ -76,8 +122,8 @@ class _OfferCarouselState extends State<OfferCarousel> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.yellow,
+                  style: TextStyle(
+                    color: textColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -85,8 +131,8 @@ class _OfferCarouselState extends State<OfferCarousel> {
                 ),
                 Text(
                   discount,
-                  style: const TextStyle(
-                    color: Colors.yellow,
+                  style: TextStyle(
+                    color: textColor,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),

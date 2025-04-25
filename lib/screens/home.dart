@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry_app/bloc/carousel_bloc.dart';
 import 'package:laundry_app/user_pref.dart';
 import '../bloc/service_bloc.dart';
 import '../bloc/user_bloc.dart';
@@ -39,8 +40,16 @@ class _LaundryHomePageState extends State<LaundryHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<LaundryServiceBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<CarouselBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<LaundryServiceBloc>(),
+        ),
+        // Add more BlocProviders as needed
+      ],
       child: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
