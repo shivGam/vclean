@@ -202,7 +202,7 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
                   border: Border.all(color: Colors.green.shade200)
               ),
               child: Text(
-                'Price: ${widget.service.price}',
+                'Price starts from: ${widget.service.price}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -278,8 +278,7 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
                           },
                           itemBuilder: (context) => [
                             _buildPriorityItem('Urgent'),
-                            _buildPriorityItem('Late'),
-                            _buildPriorityItem('Usual'),
+                            _buildPriorityItem('Normal')
                           ],
                           child: Center(
                             child: Row(
@@ -394,9 +393,7 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
     switch (priority) {
       case 'Urgent':
         return PriorityList.urgent;
-      case 'Late':
-        return PriorityList.late;
-      case 'Usual':
+      case 'Normal':
       default:
         return PriorityList.usual;
     }
@@ -407,9 +404,7 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
     switch (priority) {
       case 'Urgent':
         return Colors.red.shade700;
-      case 'Late':
-        return Colors.green.shade700;
-      case 'Usual':
+      case 'Normal':
       default:
         return Colors.orange.shade700;
     }

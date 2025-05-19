@@ -1,6 +1,5 @@
 enum PriorityList {
   urgent,
-  late,
   usual
 }
 

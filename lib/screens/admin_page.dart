@@ -220,8 +220,6 @@ class AdminOrderCard extends StatelessWidget {
       switch (order.priorities) {
         case PriorityList.urgent:
           return Colors.red.withOpacity(0.5);
-        case PriorityList.late:
-          return Colors.blue.withOpacity(0.5);
         case PriorityList.usual:
           return Colors.grey.withOpacity(0.1);
       }
