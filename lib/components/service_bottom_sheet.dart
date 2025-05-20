@@ -20,6 +20,8 @@ class ServiceDetailSheet extends StatefulWidget {
 class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
   // Track the current user rating
   int _userRating = 0;
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
   String _selectedPriority = 'Usual';
   final OrderBloc _orderBloc = sl<OrderBloc>();
   final UserPreferencesManager _prefsManager = sl<UserPreferencesManager>();
@@ -32,26 +34,28 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
   }
 
   // Method to handle star rating
-  void _setRating(int rating) {
-    setState(() {
-      _userRating = rating;
-    });
-
-    // Show the snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Thanks for rating this service ${rating.toString()} stars!'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
-
-    // Here you could also update the rating in your database
-    // updateServiceRating(widget.service.id, rating);
+    if (picked != null && picked != _selectedDate) {
+      setState(() => _selectedDate = picked);
+    }
   }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedTime) {
+      setState(() => _selectedTime = picked);
+    }
+  }
+
 
   // Place order method
   void _placeOrder() async {
@@ -67,11 +71,27 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
       return;
     }
 
+    if (_selectedDate == null || _selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select pickup date and time'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final DateTime pickupDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+
     // Create a new order
     final Order order = Order(
       orderId: const Uuid().v4(), // Generate a unique ID
       timestamp: DateTime.now(),
       serviceName: widget.service.name,
+      pickupTime: pickupDateTime,
       amount: widget.service.price,
       customerName: userInfo.name ?? 'Unknown',
       customerAddress: userInfo.address ?? 'Not provided',
@@ -80,7 +100,7 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
       priorities: _mapStringToPriority(_selectedPriority),
       customerId: userInfo.userId ?? 'Not provided',
     );
-
+    print(order.pickupTime);
     // Save the order using the OrderBloc
     _orderBloc.add(SaveOrder(order));
 
@@ -311,34 +331,54 @@ class _ServiceDetailSheetState extends State<ServiceDetailSheet> {
             const SizedBox(height: 20),
 
             // Interactive Rating section
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                const Text(
-                  'Rate This Service',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF004D67),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _selectDate,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today, size: 20, color: Colors.blue.shade800),
+                          const SizedBox(width: 8),
+                          Text(
+                            _selectedDate != null
+                                ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
+                                : 'Select Pickup Date',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: List.generate(5, (index) {
-                    // Add 1 to index since star ratings are 1-5, not 0-4
-                    final starNumber = index + 1;
-                    return GestureDetector(
-                      onTap: () => _setRating(starNumber),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: Icon(
-                          starNumber <= _userRating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 24,
-                        ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _selectTime,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        children: [
+                          Icon(Icons.access_time, size: 20, color: Colors.blue.shade800),
+                          const SizedBox(width: 8),
+                          Text(
+                            _selectedTime != null
+                                ? '${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
+                                : 'Select Pickup Time',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ],
                       ),
-                    );
-                  }),
+                    ),
+                  ),
                 ),
               ],
             ),

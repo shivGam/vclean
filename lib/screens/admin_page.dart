@@ -314,6 +314,15 @@ class AdminOrderCard extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
+                const SizedBox(height: 12),
+                if (order.pickupTime != null)
+                  Text(
+                    'Pickup by: ${DateFormat('dd MMM yyyy, hh:mm a').format(order.pickupTime!)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
               ],
             ),
           ),

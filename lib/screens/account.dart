@@ -100,21 +100,21 @@ class _AccountPageState extends State<AccountPage> {
             
             const SizedBox(height: 16,),
 
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push( context, MaterialPageRoute(builder: (_) => ReviewScreen(userData: userData)));
-                },
-                child: const Text('Review Us!')
-            ),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       Navigator.push( context, MaterialPageRoute(builder: (_) => ReviewScreen(userData: userData)));
+            //     },
+            //     child: const Text('Review Us!')
+            // ),
 
-            const SizedBox(height: 16,),
-            
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push( context, MaterialPageRoute(builder: (_) => AddCarouselScreen()),);
-                },
-                child: const Text('Add services')
-            ),
+            // const SizedBox(height: 16,),
+            //
+            // ElevatedButton(
+            //     onPressed: () {
+            //       Navigator.push( context, MaterialPageRoute(builder: (_) => AddCarouselScreen()),);
+            //     },
+            //     child: const Text('Add services')
+            // ),
             
             const Spacer(),
             // Logout button
